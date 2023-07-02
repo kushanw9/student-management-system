@@ -167,7 +167,19 @@ public class StudentViewController {
 
     @FXML
     void btnNewStudentOnAction(ActionEvent event) {
+        ObservableList<Student> studentList = tblStudents.getItems();
+        int newId= studentList.isEmpty()?1:studentList.get(studentList.size()-1).getId()+1;
+        System.out.println(newId);
+        String sId = newId + "";
+        txtId.setText(sId);
+        txtFirstName.clear();
+        txtLastName.clear();
+        txtAddress.clear();
+        txtDOB.setValue(null);
+        tglGender.selectToggle(null);
+        tblStudents.getSelectionModel().clearSelection();
 
+        txtFirstName.requestFocus();
     }
 
     @FXML
@@ -176,8 +188,8 @@ public class StudentViewController {
     }
 
     @FXML
-    void tblStudentsOnKeyReleased(KeyEvent event) {
-
+    void tblStudentsOnKeyReleased(KeyEvent keyEvent) {
+        if(keyEvent.getCode()== KeyCode.DELETE) btnDeleteStudent.fire();
     }
 
 }
