@@ -150,6 +150,18 @@ public class StudentViewController {
 
     @FXML
     void btnDeleteStudentOnAction(ActionEvent event) {
+        try {
+            Connection connection= DBConnection.getInstance().getConnection();
+            Statement stm = connection.createStatement();
+            String sql = "DELETE FROM Student WHERE id=%d";
+            sql = String.format(sql, tblStudents.getSelectionModel().getSelectedItem().getId());
+            stm.executeUpdate(sql);
+
+            tblStudents.getItems().remove(tblStudents.getSelectionModel().getSelectedItem());
+            if(tblStudents.getItems().isEmpty()) btnNewStudent.fire();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
