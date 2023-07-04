@@ -187,6 +187,37 @@ public class StudentViewController {
     void btnSaveStudentOnAction(ActionEvent event) {
         System.out.println("Save Student");
         if (!isValid())return;
+        try {
+            Student student = new Student(Integer.parseInt(txtId.getText()), txtFirstName.getText(), txtLastName.getText(), txtAddress.getText(),
+                    tglGender.getSelectedToggle() == rdMale ? Gender.MALE : Gender.FEMALE, txtDOB.getValue());
+
+            Connection connection = DBConnection.getInstance().getConnection();
+            Statement stm = connection.createStatement();
+            Student selectedStudent = tblStudents.getSelectionModel().getSelectedItem();
+
+            if (selectedStudent == null) {
+                String sql = "INSERT INTO Student VALUES (%d,'%s','%s','%s','%s','%s')";
+                sql = String.format(sql, student.getId(), student.getFirstName(), student.getLastName(), student.getAddress(), student.getGender().name(), student.getDateOfBirth());
+                int affectedRows = stm.executeUpdate(sql);
+                tblStudents.getItems().add(student);
+            } else {
+                String sql ="UPDATE Student SET first_name='%s',last_name='%s',address='%s',gender='%s',dob='%s' WHERE id=%d";
+                sql = String.format(sql, student.getFirstName(), student.getLastName(), student.getAddress(), student.getGender().name(), student.getDateOfBirth(), student.getId());
+                stm.executeUpdate(sql);
+                ObservableList<Student> studentList = tblStudents.getItems();
+                int selectedStudentIndex = studentList.indexOf(selectedStudent);
+                studentList.set(selectedStudentIndex, student);
+                tblStudents.refresh();
+            }
+
+
+            btnNewStudent.fire();
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR,"Failed to save the new student").showAndWait();
+        }
 
     }
     private boolean isValid() {
